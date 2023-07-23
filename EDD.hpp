@@ -71,8 +71,40 @@ class tLista {
         void print();
 };
 
+struct tNodo{
+    tElemLista info;
+    tNodo* sig;
+};
 
+class ListaE {
+    private:
+        tNodo* head;
+        tNodo* tail;
+        tNodo* curr;//                                      apuntara siempre al nodo anterior del actual, para acceder al valor seria curr->sig->info
+        int listSize;
+        int pos; // posicion actual en la lista
+    public:
+        ListaE();
+        ~ListaE();
 
+        void clear();//                     borra todos los elementos de la lista, reinicializándola vacía
+        int insert(tElemLista item);//      inserta un elemento en la posición actual de la lista
+        int append(tElemLista item);//      agrega un elemento al final de la lista
+        tElemLista erase();//               borra el elemento actual y retorna su valor
+        void moveToStart();//               mueve la posición actual al comienzo de la lista
+        void moveToEnd();//                 mueve la posición actual al final de la lista deja una posicion adelante del ultimo elemento
+        void next();//                      mueve la posición actual al siguiente elemento de la lista, no produce cambios si está en la cola de la lista
+        void prev();//                      mueve la posición actual al elemento anterior de la lista, no produce cambios si está en la cabeza de la lista
+        int length();//                     retorna el número de elementos en la lista
+        //int currPos();//                    retorna la posición del elemento actual
+        void moveToPos(int pos);//          mueve la posición actual a una especificada
+        tElemLista getValue();//            obtiene el valor del elemento actual de la lista
+};
+
+class jugador{
+    private:
+        
+};
 
 
 //                      Pila
@@ -255,4 +287,116 @@ void tLista::print(){
     for (unsigned int i=0 ; i<listSize ; i++)
         cout<<"["<<listArray[i].value<<"] ";   
     cout<<"\n";
+}
+
+
+
+
+
+//                          lista enlazada
+
+
+
+
+
+ListaE::ListaE() {
+ head = tail = curr = new tNodo;
+ listSize = 0;
+ pos = 0;
+}
+
+ListaE::~ListaE(){
+    clear();
+    delete head;
+}
+
+void ListaE::clear() {
+    tNodo* aux = head->sig;    
+    while (aux != NULL) {
+        tNodo* temp = aux;
+        aux = aux->sig;
+        delete temp;
+    }
+    head->sig = NULL;
+    tail = curr = head;
+    listSize = 0;
+    pos = 0;
+
+}
+
+int ListaE::insert(tElemLista item) {
+    tNodo* aux = curr->sig;
+    curr->sig = new tNodo;
+    curr->sig->info = item;
+    curr->sig->sig = aux;
+    if (curr == tail)   
+        tail = curr->sig;
+    listSize++;
+    return pos;
+}
+
+void ListaE::moveToStart() { 
+    curr = head; 
+    pos = 0; 
+}
+
+void ListaE::moveToEnd() { 
+    curr = tail; 
+    pos = listSize; 
+}
+
+void ListaE::prev() {
+    tNodo* temp;
+    if (curr == head)   
+        return;
+    temp = head;
+    while (temp->sig != curr) 
+        temp = temp->sig;
+    curr = temp;
+    pos--;
+}
+
+void ListaE::next() { 
+    if (curr != tail) { 
+        curr = curr->sig; 
+        pos++; 
+    } 
+}
+
+void ListaE::moveToPos(int posicion) {
+    if (posicion < 0 || posicion > listSize) 
+        return;
+    curr = head;
+    pos = 0;
+    for (int i = 0; i < posicion; i++) {
+        curr = curr->sig;
+        pos++;
+    }
+}
+
+tElemLista ListaE::getValue(){
+    return curr->sig->info;
+}
+
+int ListaE::length(){
+    return listSize;
+}
+
+tElemLista ListaE::erase() {
+    tNodo* eliminar = curr->sig;
+    tElemLista ret = eliminar->info;
+    curr->sig = eliminar->sig;
+    if (eliminar == tail)
+        tail = curr;
+    delete eliminar;
+    listSize--;
+    return ret;
+}
+
+int ListaE::append(tElemLista item){
+    tNodo* aux = tail->sig;
+    aux=new tNodo;
+    aux->info=item;
+    tail=aux;
+    return 1;
 }
